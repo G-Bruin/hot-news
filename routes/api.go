@@ -6,13 +6,13 @@ import (
 	"hotNews/utils"
 )
 
-func Init()  {
+func Init() {
+	gin.SetMode(utils.AppSetting.DebugMode)
 	router := gin.Default()
-
 	v1 := router.Group("/v1")
 	{
 		v1.POST("/login", controllers.Login)
 	}
 	port := utils.AppSetting.Port
-	router.Run(":"+port)
+	router.Run(":" + port)
 }

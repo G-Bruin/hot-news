@@ -32,9 +32,10 @@ var RedisSetting = &rdSetting{}
 
 // app 配置文件
 type appSetting struct {
-	Protocol string `ini:"protocol"`
-	Port     string `ini:"http_port"`
-	AppMode  string `ini:"app_mode"`
+	Protocol  string `ini:"protocol"`
+	Port      string `ini:"http_port"`
+	AppMode   string `ini:"app_mode"`
+	DebugMode string `ini:"debug_mode"`
 }
 
 var AppSetting = &appSetting{}

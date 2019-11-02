@@ -3,6 +3,8 @@ protocol = http
 http_port = 9999
 # possible values : production, develop, local
 app_mode = production
+# possible values : debug, release, test
+debug_mode = release
 
 [mongo]
 host      =
