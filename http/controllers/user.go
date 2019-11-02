@@ -6,8 +6,10 @@ import (
 )
 
 func Login(c *gin.Context) {
-	list := make(map[string]interface{})
-	list["message"] = c.PostForm("message")
-	list["valuename"] = c.DefaultPostForm("valuename", "Golang")
+
+	url := "https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total"
+
+	list, _ := Curl("GET", url, "limit=50&desktop=true")
+
 	ReturnJson(c, http.StatusOK, "success", list)
 }
