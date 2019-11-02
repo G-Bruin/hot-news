@@ -9,6 +9,7 @@ import (
 func Init() {
 	gin.SetMode(utils.AppSetting.DebugMode)
 	router := gin.Default()
+	// v1 api
 	v1 := router.Group("/v1")
 	{
 		v1.POST("/login", controllers.Login)

@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-func Login(c *gin.Context)  {
-	message := c.PostForm("message")
-	valuename := c.DefaultPostForm("valuename", "Golang")
-
-	c.JSON(http.StatusOK, gin.H{"status": gin.H{"status_code": http.StatusOK, "status": "ok",}, "message": message, "name": valuename,})
+func Login(c *gin.Context) {
+	list := make(map[string]interface{})
+	list["message"] = c.PostForm("message")
+	list["valuename"] = c.DefaultPostForm("valuename", "Golang")
+	ReturnJson(c, http.StatusOK, "success", list)
 }
