@@ -2,9 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	mysql "hotNews/db"
+	"hotNews/http/models"
 	"net/http"
+	"regexp"
+	"strconv"
+	"time"
 )
 
 type TopResult struct {
@@ -36,12 +40,45 @@ type Children struct {
 }
 
 func ZhTop(c *gin.Context) {
-	url := "https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=50&desktop=true"
-	body, _ := Curl("GET", url, "")
-	var results TopResult
-	err := json.Unmarshal([]byte(string(body)), &results)
-	if err != nil {
-		fmt.Println(err)
+
+	db := mysql.DbEngin
+	application := model.Application{}
+	//获取app数据 增加计算时间
+	appDb := db.Where("alias = ?", "zhihu-top")
+	appDb.First(&application)
+	if application.Id < 0 {
+		return
 	}
-	ReturnJson(c, http.StatusOK, "success", results)
+	application.StartTime = time.Now().Unix()
+	appDb.Save(&application)
+
+	body, _ := Curl("GET", application.Url, "")
+	var result TopResult
+	_ = json.Unmarshal([]byte(string(body)), &result)
+
+	article := model.Article{}
+	for _, item := range result.Data {
+		article.TargetId = strconv.Itoa(item.Target.Id)
+		article.ApplicationId = 1
+		tmpDb := db.Where("target_id = ?", article.TargetId).Where("application_id = ?", article.ApplicationId)
+		tmpDb.First(&article)
+
+		hit, _ := strconv.Atoi(string(regexp.MustCompile("\\d+").Find([]byte(item.Detail_Text))))
+		article.Hit = hit * 10000
+		article.Title = item.Target.Title
+		jsonBytes, _ := json.Marshal(item)
+		article.Json = string(jsonBytes)
+		if len(item.Children) > 0 {
+			article.Cover = item.Children[0].Thumbnail
+		}
+		if article.Id > 0 {
+			tmpDb.Save(&article)
+		} else {
+			article.CreatedAt = time.Now()
+			tmpDb.Create(&article)
+		}
+		article.Id = 0
+	}
+	ReturnJson(c, http.StatusOK, "success", result.Data)
+
 }
