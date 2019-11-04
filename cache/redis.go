@@ -104,7 +104,7 @@ func Push(counterKey string, jsonStr []byte) error {
 
 	conn := Pool.Get()
 	defer conn.Close()
-	_, err := conn.Do("rpush", counterKey, jsonStr)
+	_, err := conn.Do("RPush", counterKey, jsonStr)
 	return err
 }
 
