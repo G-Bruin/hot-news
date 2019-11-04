@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -21,7 +20,8 @@ func ReturnJson(c *gin.Context, status_code int, message string, data interface{
 		})
 }
 
-func Curl(method, urlVal, data string) (result interface{}, err error) {
+// 请求数据接口
+func Curl(method, urlVal, data string) (result []byte, err error) {
 	client := &http.Client{}
 	var req *http.Request
 	if data == "" {
@@ -33,25 +33,28 @@ func Curl(method, urlVal, data string) (result interface{}, err error) {
 	} else {
 		req, _ = http.NewRequest(method, urlVal, strings.NewReader(data))
 	}
+	//var res map[string]interface{}
+
 	//可以添加多个cookie
 	//cookie1 := &http.Cookie{Name: "X-Xsrftoken", Value: "111", HttpOnly: true}
 	//req.AddCookie(cookie1)
-
-	req.Header.Add("X-Xsrftoken", "1111")
+	//req.Header.Add("X-Xsrftoken", "1111")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8") //设置Content-Type
 
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
-	b, _ := ioutil.ReadAll(resp.Body)
-	var res map[string]interface{}
-	if err := json.Unmarshal([]byte(string(b)), &res); err != nil {
-		return "", err
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
 	}
-	return res, nil
+	//if err := json.Unmarshal([]byte(string(b)), &res); err != nil {
+	//	return res, err
+	//}
+	return body, nil
 }
 
 //将get请求的参数进行转义
