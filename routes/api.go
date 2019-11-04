@@ -12,7 +12,7 @@ func Init() {
 	// v1 api
 	v1 := router.Group("/v1")
 	{
-		v1.GET("/login", controllers.Top)
+		v1.GET("/zhihu/top", controllers.ZhTop)
 	}
 	port := utils.AppSetting.Port
 	router.Run(":" + port)

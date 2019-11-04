@@ -4,6 +4,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"hotNews/http/models"
 	"hotNews/utils"
 	"log"
 	"os"
@@ -22,6 +23,7 @@ func init() {
 		log.Fatal(err)
 		os.Exit(1)
 	}
+	DbEngin.AutoMigrate(&model.Application{}, &model.Article{})
 	DbEngin.LogMode(true)
 	fmt.Println("init database ok")
 }
