@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"hotNews/cache"
 	mysql "hotNews/db"
 	"hotNews/http/models"
-	"net/http"
 	"regexp"
 	"strconv"
 	"time"
@@ -39,18 +39,27 @@ type Children struct {
 	Type      string `json:"type"`
 }
 
-func ZhTop(c *gin.Context) {
-
+func ZhTop() {
+	limit := 1
+	key := "limiter:zhihu-top"
+	res, _ := cache.Get(key)
+	int_res, _ := strconv.Atoi(string(res))
+	if int_res > 0 {
+		fmt.Println(key + "数据抓取完成")
+		return
+	}
 	db := mysql.DbEngin
 	application := model.Application{}
 	//获取app数据 增加计算时间
-	appDb := db.Where("alias = ?", "zhihu-top")
+	appDb := db.Where("alias = ?", key)
 	appDb.First(&application)
 	if application.Id < 0 {
 		return
 	}
-	application.StartTime = time.Now().Unix()
-	appDb.Save(&application)
+	number := cache.Limiter(key, limit, application.Polling)
+	if !number {
+		return
+	}
 
 	body, _ := Curl("GET", application.Url, "")
 	var result TopResult
@@ -79,6 +88,5 @@ func ZhTop(c *gin.Context) {
 		}
 		article.Id = 0
 	}
-	ReturnJson(c, http.StatusOK, "success", result.Data)
-
+	//ReturnJson(c, http.StatusOK, "success", result.Data)
 }

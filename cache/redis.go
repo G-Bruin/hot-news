@@ -115,3 +115,13 @@ func Expire(counterKey string, left_time int64) error {
 	_, err := conn.Do("EXPIRE", counterKey, left_time)
 	return err
 }
+
+func Limiter(counterKey string, limit int, left_time int64) bool {
+
+	total, _ := Incr(counterKey)
+	if total > limit {
+		return false
+	}
+	_ = Expire(counterKey, left_time)
+	return true
+}

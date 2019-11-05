@@ -13,8 +13,7 @@ type BaseModel struct {
 
 type Application struct {
 	Id          int    `gorm:"primary_key,AUTO_INCREMENT" json:"id"`
-	StartTime   int64  `gorm:"default:0" json:"start_time"`
-	Polling     int    `gorm:"default:0" json:"polling"`
+	Polling     int64  `gorm:"default:0" json:"polling"`
 	Designation string `gorm:"type:varchar(30);not null" json:"designation" `
 	Alias       string `gorm:"type:varchar(20);unique_index;not null" json:"alias" `
 	Url         string `gorm:"type:varchar(255);not null" json:"url" `
