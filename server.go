@@ -2,7 +2,6 @@ package main
 
 import (
 	"hotNews/db"
-	"hotNews/http/channel"
 	"hotNews/routes"
 )
 
@@ -10,7 +9,7 @@ func main() {
 	defer db.DbClose()
 
 	//channel
-	channel.Init()
+	//channel.Init()
 
 	// 初始化路由
 	routes.Init()
