@@ -6,7 +6,7 @@ type Article struct {
 	TargetId      string `gorm:"type:varchar(20);unique_index:idx_application_id_target_id;not null" json:"target_id" `
 	Title         string `gorm:"type:varchar(100);not null" json:"title" `
 	Cover         string `gorm:"type:varchar(255);default:null" json:"cover" `
-	Json          string `gorm:"type:text(255);not null" json:"json"`
+	Json          string `gorm:"type:text;not null" json:"json"`
 	Hit           int    `gorm:"default:0" json:"hit"`
 	BaseModel
 }

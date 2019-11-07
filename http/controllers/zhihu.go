@@ -163,37 +163,44 @@ func QueryHtml(c *gin.Context) {
 }
 
 func Detail(c *gin.Context) {
-	url := "https://www.cnys.com/article/76752.html"
-
-	res, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	}
-
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	db := mysql.DbEngin
-	article := model.Article{}
 
-	doc.Find(".readbox").Each(func(i int, s *goquery.Selection) {
+	rows, _ := db.Model(&model.Article{}).Where("application_id = 2").Rows()
+	defer rows.Close()
+	for rows.Next() {
+		modelArticle := model.Article{}
+		_ = db.ScanRows(rows, &modelArticle)
 
-		pp := s.Find(".digest p").Text()
-		dd := s.Find(".reads").Text()
-		fmt.Println(pp)
-		fmt.Println(dd)
-		tmpDb := db.Where("id = 1070")
-		tmpDb.First(&article)
-		article.Json = string(pp)
-		tmpDb.Save(&article)
+		url := "https://www.cnys.com/article/" + modelArticle.TargetId + ".html"
 
-	})
+		res, err := http.Get(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer res.Body.Close()
+		if res.StatusCode != 200 {
+			log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+		}
 
+		doc, err := goquery.NewDocumentFromReader(res.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		article := model.Article{}
+
+		doc.Find(".readbox").Each(func(i int, s *goquery.Selection) {
+
+			pp := s.Find(".digest p").Text()
+			dd, _ := s.Find(".reads").Html()
+			fmt.Println(pp)
+			fmt.Println(dd)
+			tmpDb := db.Where("id = ?", modelArticle.Id)
+			tmpDb.First(&article)
+			article.Json = string(dd)
+			tmpDb.Save(&article)
+
+		})
+	}
 	ReturnJson(c, http.StatusOK, "success", "")
 }
