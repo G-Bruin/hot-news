@@ -1,13 +1,17 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 	"hotNews/cache"
 	mysql "hotNews/db"
-	model "hotNews/http/models"
+	"hotNews/http/models"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -202,5 +206,31 @@ func Detail(c *gin.Context) {
 
 		})
 	}
+	ReturnJson(c, http.StatusOK, "success", "")
+}
+
+func Wenku(c *gin.Context) {
+	url := "https://wenku.baidu.com/view/f618bfa2eef9aef8941ea76e58fafab069dc4482.html"
+	res, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+	}
+
+	d, _ := ioutil.ReadAll(res.Body)
+	reader := transform.NewReader(bytes.NewReader(d), simplifiedchinese.GBK.NewDecoder())
+
+	doc, err := goquery.NewDocumentFromReader(reader)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(doc)
+	doc.Find("#bd").Each(func(i int, s *goquery.Selection) {
+		pp, _ := s.Find(".moreBtn").Html()
+		fmt.Println(pp)
+	})
 	ReturnJson(c, http.StatusOK, "success", "")
 }

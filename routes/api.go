@@ -14,6 +14,7 @@ func Init() {
 	{
 		v1.GET("/zhihu/top", controllers.QueryHtml)
 		v1.GET("/zhihu/detail", controllers.Detail)
+		v1.GET("/zhihu/wenku", controllers.Wenku)
 	}
 	port := utils.AppSetting.Port
 	router.Run(":" + port)

@@ -37,9 +37,12 @@ replace (
 
 require (
 	github.com/PuerkitoBio/goquery v1.5.0
+	github.com/djimenez/iconv-go v0.0.0-20160305225143-8960e66bd3da
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-ini/ini v1.49.0
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/jinzhu/gorm v1.9.11
+	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c
+	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2
 )
