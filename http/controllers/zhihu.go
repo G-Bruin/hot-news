@@ -1,13 +1,10 @@
 package controllers
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
 	"hotNews/cache"
 	mysql "hotNews/db"
 	"hotNews/http/models"
@@ -209,6 +206,9 @@ func Detail(c *gin.Context) {
 	ReturnJson(c, http.StatusOK, "success", "")
 }
 
+/*
+百度文库
+*/
 func Wenku(c *gin.Context) {
 	url := "https://wenku.baidu.com/view/f618bfa2eef9aef8941ea76e58fafab069dc4482.html"
 	res, err := http.Get(url)
@@ -219,18 +219,32 @@ func Wenku(c *gin.Context) {
 	if res.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
-
 	d, _ := ioutil.ReadAll(res.Body)
-	reader := transform.NewReader(bytes.NewReader(d), simplifiedchinese.GBK.NewDecoder())
+	//reader := transform.NewReader(bytes.NewReader(d), simplifiedchinese.GBK.NewDecoder())
 
-	doc, err := goquery.NewDocumentFromReader(reader)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(doc)
-	doc.Find("#bd").Each(func(i int, s *goquery.Selection) {
-		pp, _ := s.Find(".moreBtn").Html()
-		fmt.Println(pp)
-	})
-	ReturnJson(c, http.StatusOK, "success", "")
+	//doc, err := goquery.NewDocumentFromReader(reader)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//doc.Find("#bd").Each(func(i int, s *goquery.Selection) {
+	//	init_number := 3
+	//
+	//	for i := 3; i <= init_number; i++ {
+	//		fmt.Println("循环：", i)
+	//		target := ".reader-page-" + strconv.Itoa(i)
+	//		fmt.Println(target)
+	//		html, _ := s.Find(target).Html()
+	//		fmt.Println(html)
+	//	}
+	//	more_btn, _ := s.Find(".moreBtn").Html()
+	//	left_number, _ := strconv.Atoi(string(regexp.MustCompile("\\d+").Find([]byte(more_btn))))
+	//
+	//	if left_number > 0 {
+	//
+	//	}
+	//
+	//	fmt.Println("剩下页数", left_number)
+	//})
+	ReturnJson(c, http.StatusOK, "success", d)
 }
